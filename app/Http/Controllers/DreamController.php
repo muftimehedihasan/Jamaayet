@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DreamController extends Controller
 {
@@ -11,7 +12,9 @@ class DreamController extends Controller
      */
     public function index()
     {
-        //
+        $dreams = DB::table(table: 'dreams')->where('user_id', auth()->user()->id)->get();
+        dd($dreams);
+        return view('admin.dreams.index');
     }
 
     /**
