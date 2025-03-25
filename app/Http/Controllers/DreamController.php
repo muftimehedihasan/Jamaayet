@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DreamController extends Controller
@@ -13,8 +14,12 @@ class DreamController extends Controller
     public function index()
     {
         $dreams = DB::table(table: 'dreams')->where('user_id', auth()->user()->id)->get();
-        dd($dreams);
-        return view('admin.dreams.index');
+
+        $dreams->map(function ($dreams){
+            $dreams->created_at = Carbon::make($dreams->created_at);
+            $dreams->updated_at = Carbon::make($dreams->updated_at);
+        });
+        return view('admin.dreams.index', compact('dreams'));
     }
 
     /**
@@ -46,7 +51,7 @@ class DreamController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        dd($id);
     }
 
     /**
