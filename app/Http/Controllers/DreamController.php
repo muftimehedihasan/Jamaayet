@@ -27,7 +27,7 @@ class DreamController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.dreams.create');
     }
 
     /**

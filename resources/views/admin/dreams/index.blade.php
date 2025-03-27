@@ -18,7 +18,7 @@
                                     The Dream
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Created
+                                    Created_at
                                 </th>
                             </tr>
                         </thead>
