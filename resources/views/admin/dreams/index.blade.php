@@ -18,7 +18,7 @@
                                     The Dream
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Created
+                                    Created_at
                                 </th>
                             </tr>
                         </thead>
@@ -37,7 +37,16 @@
                                 </td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <a href="{{ route('dreams.edit', $dream->id) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
+
+                                    <form action="{{ route('dreams.destroy', $dream->id) }}" method="post" onclick="return confirm('Are you sure?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                                            Delete
+                                        </button>
+                                    </form>                                    
+
+                                
                                 </td>
                             </tr>
                             @empty

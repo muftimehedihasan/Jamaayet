@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Services\DreamService;
 use Illuminate\Support\Facades\DB;
 
 class DreamController extends Controller
@@ -11,14 +12,16 @@ class DreamController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $dreams = DB::table(table: 'dreams')->where('user_id', auth()->user()->id)->get();
+    // public function index(DreamService $dreamService)
+    // {
+    //     $dreams = $dreamService->getAllDreams();
 
-        $dreams->map(function ($dreams){
-            $dreams->created_at = Carbon::make($dreams->created_at);
-            $dreams->updated_at = Carbon::make($dreams->updated_at);
-        });
+    //     return view('admin.dreams.index', compact('dreams'));
+    // }
+
+     public function index(DreamService $dreamService)
+    {
+        $dreams = $dreamService->getAllDreams();
         return view('admin.dreams.index', compact('dreams'));
     }
 
@@ -27,7 +30,7 @@ class DreamController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.dreams.create');
     }
 
     /**
@@ -35,23 +38,55 @@ class DreamController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validated = $request->validate([
+            'content' => 'required'|'string',
+        ]);
+
+        $dream = DB::table('dreams')->insert([
+            'user_id' => auth()->user()->id,
+            ...$validated,
+            'created_at' => now(),
+            'updated_at'=> now(),
+        ]);
+
+        if ($dream) {
+            return redirect()->route('dreams.index');
+        }
+
     }
 
     /**
      * Display the specified resource.
      */
+
     public function show(string $id)
     {
-        //
+        $dream = DB::table('dreams')->where('id', $id)->first(); 
+        if (!$dream) {
+            abort(404); 
+        }
+        return view('admin.dreams.show', compact('dream'));
     }
+    
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        dd($id);
+        $dream = DB::table('dreams')
+        
+        ->where('id', $id)
+
+        ->where('user_id', auth()->user()->id)
+
+        ->first();
+
+        if (!$dream) {
+            return to_route('dreams.index');
+        }
+        return view('admin.dreams.edit', compact('dream'));
     }
 
     /**
@@ -59,7 +94,20 @@ class DreamController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $dream = DB::table('dreams')
+        ->where('id', $id)
+        ->update([
+            ...$validated,
+            'updated_at'=> now(),
+        ]);
+
+        return to_route('dreams.show', $id);
+
+
     }
 
     /**
@@ -67,6 +115,14 @@ class DreamController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $dream = DB::table('dreams') 
+            ->where([
+                'id' => $id,
+                'user_id' => auth()->user()->id
+            ])
+            ->delete(); // এখানে সঠিকভাবে শেষ হয়েছে ✅
+    
+        return back();
     }
+    
 }
